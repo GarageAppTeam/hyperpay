@@ -23,6 +23,7 @@ class HyperpayPlugin {
 
   CheckoutSettings? _checkoutSettings;
   String _checkoutID = '';
+  BrandType? _brand;
 
   /// Read the configurations used to setup this instance of HyperPay.
   HyperpayConfig get config => _config;
@@ -43,10 +44,12 @@ class HyperpayPlugin {
   }
 
   /// Instantiate a checkout session.
-  void initSession({required CheckoutSettings checkoutSetting}) async {
+  void initSession({required String checkoutId, required BrandType brand}) async {
     // ensure anything from previous session is cleaned up.
+
     _clearSession();
-    _checkoutSettings = checkoutSetting;
+    _checkoutID = checkoutId;
+    _brand = brand;
   }
 
   /// Used to clear any lefovers from previous session
@@ -225,23 +228,22 @@ class HyperpayPlugin {
     }
   }
 
-  /// Check for payment status using a [checkoutID].
+  /// Check for payment status using a checkout ID
   Future<Map<String, dynamic>> paymentStatus(String checkoutID,
       {Map<String, String>? headers}) async {
     try {
       final body = {
-        'entityID': _checkoutSettings?.brand.entityID(config),
+        'entityID': _brand?.entityID(config),
         'checkoutID': checkoutID,
       };
-
       final Response response = await post(
         _config.statusEndpoint,
         headers: headers,
-        body: _checkoutSettings?.headers['Content-Type'] == 'application/json'
+        body: (_checkoutSettings?.headers['Content-Type'] ?? '') ==
+                'application/json'
             ? json.encode(body)
             : body,
       );
-
       Map<String, dynamic> _resBody = {};
 
       try {
