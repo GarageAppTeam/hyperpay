@@ -64,7 +64,7 @@ class HyperpayPlugin {
   Future<String> get getCheckoutID async {
     try {
       final body = {
-        'entityID': _checkoutSettings?.brand.entityID(config),
+        'entityID': _brand?.entityID(config),
         'amount': _checkoutSettings?.amount.toStringAsFixed(2),
         ..._checkoutSettings?.additionalParams ?? {},
       };
@@ -135,7 +135,7 @@ class HyperpayPlugin {
         'start_payment_transaction',
         {
           'checkoutID': _checkoutID,
-          'brand': _checkoutSettings?.brand.name.toUpperCase(),
+          'brand': _brand?.name.toUpperCase(),
           'card': card.toMap(),
         },
       );
